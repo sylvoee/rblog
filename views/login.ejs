@@ -13,7 +13,7 @@
   <meta name="description" content="" />
   <meta name="author" content="" />
 
-  <title>TheBlogist</title>
+  <title>TheBlogist || login</title>
 
 
   <!-- bootstrap core css -->
@@ -70,7 +70,7 @@
           <div class="quote_btn-container">
             <a href="">
               <span>
-                Login
+                
               </span>
               <i class="fa fa-user" aria-hidden="true"></i>
             </a>
@@ -97,26 +97,19 @@
                 LOGIN
               </h2>
             </div>
-            <form action="/register-user" method="POST">
-              <div>
-                <input type="text" placeholder="Your Name" name="name"/>
-              </div>
-              <div>
-                <input type="email" placeholder="Enter email" name="email" required/>
-              </div>
-              <div>
-                <input type="email" placeholder="Email" />
-              </div>
+            <form action="/login-user" method="POST">
+                <div>
+                    <label for="">Email</label>
+                    <input type="email"  name="email" reqired/>
+                  </div>  
+            
               <div>
                 <label for="">password</label>
                 <input type="password"  name="password" reqired/>
               </div>
-              <div>
-                <label for="">confirm-password</label>
-                <input type="password"  name="confirm-password" reqired/>
-              </div>
+              
               <div class="btn_box">
-                <button> LOGIN </button>
+                <button> REGISTER</button>
               </div>
             </form>
           </div>

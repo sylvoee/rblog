@@ -1,4 +1,3 @@
-const dotgit = require('dotgitignore')();
 
 let createError = require('http-errors');
 let express = require('express');
@@ -6,8 +5,13 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let  mongoose = require('mongoose');
+const dotgit = require('dotgitignore')();
+//let MongoStore = require('connect-mongo');
+let expressSession = require('express-session')
+require('dotenv').config()
 
 let route = require('./route');
+const MongoStore = require('connect-mongo');
 
 
 let app = express();
@@ -22,12 +26,28 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+
+
 //connect database
-const dburl = 'mongodb://localhost:27017/Blogdb'
- mongoose.connect(dburl).then((err)=>{
+const dburl = process.env.DBURL
+mongoose.connect(dburl).then((err)=>{
   console.log("database connected");
  });
 
+// set auth and cookie
+app.use(expressSession({
+  secret: "a secrete",
+  resave: false,
+  store: MongoStore.create({
+      mongoUrl: dburl,
+      collectionName: "sessionWarehouse",
+      useUnifiedTopology: true
+  }),
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 },
+  saveUninitialized: true,
+
+}));
 
 
 app.use('/', route);
