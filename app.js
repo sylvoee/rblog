@@ -9,6 +9,8 @@ const { default: mongoose } = require('mongoose');
 let gitignore = require(`gitignore`);
 require('dotenv').config();
 let bodyParser = require('body-parser')
+let mongoStore = require('connect-mongo');
+let expressSession = require('express-session');
 
 
 var app = express();
@@ -26,6 +28,47 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+
+
+// require dot-env
+require('dotenv').config();
+
+
+
+// connect o databse and create database
+mongoose.connect(process.env.DBURL).then((e) => {
+    console.log("Connected to database");
+});
+
+app.use(cookieParser())
+
+// set up auth
+
+app.set('trust proxy', 1) // trust first proxy
+app.use(expressSession({
+    secret: 'a secrete',
+    resave: false,
+    store: mongoStore.create({
+        mongoUrl: process.env.DBURL,
+        collectionName: 'sessionStore',
+        useUnifiedTopology: true
+    }, (err, suc) => {
+        if (err) { console.log(err) }
+        if (suc) {
+            console.log("db SUCESSFULLY CONNECTED")
+        }
+    }),
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 60
+
+
+    }
+}))
+
+
 
 app.use('/', routes);
 
