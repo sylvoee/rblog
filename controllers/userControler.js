@@ -18,7 +18,8 @@ module.exports = registerUser = (req,res)=>{
     try {
       let aUser = new userModel ({name, email,password: hash,status});
     aUser.save();
-    res.render("/login");
+  res.send("User registered successfully");
+  console.log(req.session.user);
     
     } catch(error) {
       console.log(error)
@@ -32,31 +33,59 @@ module.exports = registerUser = (req,res)=>{
         res.render("login");
       }
 
-      //post login
-      module.exports = loginUser = async(req,res) => {
-        const {email, password} = req.body;
-        let aUser = await  userModel.findOne({email}).exec();
-        console.log(aUser);
+  //  post login controller
+module.exports = loginUser = async (req, res, next)=>{
+  // res.status(200).send('login reached');
+  const{email, password, status} = req.body;
 
-        //comparing the password
-        const match = await bcrypt.compare(password, aUser.password);
+  // if already login, pls redirect
+  if(req.session.setLogin == true){
+    res.redirect('/');
+  }else{
 
-        if(match) {
-            console.log("password matches")
-            //store or create session
+    
+  if( password.length < 1 || email.length < 1){
+    console.log("email/password must not be empty");
+    res.status(200).send("email/password must not be empty");
 
-            req.session.user = aUser;
-            console.log("This is session" + req.session.user);
-            res.render('index', {greet: "Hello from backend", loginUser: req.session.user});
-
-        } else{
-            console.log("password or/and email is/are incorrect")
+  }else{
+   
+    let data = await userModel.findOne({email}).exec();
+     
+    await bcrypt.compare(password, data.password, (err, isMatch)=>{
+        if(isMatch){
+           req.session.setLogin = true;
+            req.session.user = data;
+            // console.log(req.session);
+            res.status(200).send({isLogin: req.session.setLogin, user: req.session.user } );
+            console.log(isMatch);
+            
+        }else{
+            res.status(200).send("email or/and password does not exist");
+                   console.log("email or/and password does not exist");
         }
+    });
+  
+  }
+     
+  }
+ 
+}
 
-        }
+        module.exports = allUsers = async (req,res) =>{
+          try {
+              let allBlog = await userModel.find({}).exec();
+              res.send(allBlog);
+             } catch (error) {
+              console.log(err);
+             }
+      }
+      
+
+
         // logout controller
 module.exports = logout = (req, res)=>{
-    req.session.setLogin = false ;
+  req.session.setLogin = false ;
     req.session.destroy(()=>{
     //  res.cookie({maxAge: 0});
         res.redirect('/');

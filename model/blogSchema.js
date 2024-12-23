@@ -5,9 +5,16 @@ let blogSchema = new mongoose.Schema({
     title : String,
     description : String,
     image:String,
+
+    user : {
+    ref : 'User',
+    required: true,
+    type:mongoose.Schema.Types.ObjectId
+},
+
     createdAt : {type: Date, default: Date.now}
 });
 
 //making a model
-let userModel = mongoose.model('blog', blogSchema);
-module.exports = userModel ;
+let blogModel = mongoose.model('Blog', blogSchema);
+module.exports = blogModel ;

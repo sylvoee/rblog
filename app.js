@@ -1,66 +1,61 @@
-
-let createError = require('http-errors');
+let bodyParser = require('body-parser')
+    // import express
 let express = require('express');
-let path = require('path');
-let cookieParser = require('cookie-parser');
-let logger = require('morgan');
-let  mongoose = require('mongoose');
-const dotgit = require('dotgitignore')();
-//let MongoStore = require('connect-mongo');
-let expressSession = require('express-session')
-require('dotenv').config()
-
-let route = require('./route');
-const MongoStore = require('connect-mongo');
-
-
+let mongoose = require('mongoose');
+// fire up the express
 let app = express();
+let route = require('./route');
+let path = require('path');
+let expressSession = require('express-session');
+let MongoStore = require('connect-mongo')
+let cookieParser = require('cookie-parser'); 
+const dotgit = require('dotgitignore')();
+require('dotenv').config();
+
+// require dot-env
+require('dotenv').config();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+// set up static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-
-
-//connect database
-const dburl = process.env.DBURL
-mongoose.connect(dburl).then((err)=>{
-  console.log("database connected");
- });
-
-// set auth and cookie
-app.use(expressSession({
-  secret: "a secrete",
-  resave: false,
-  store: MongoStore.create({
-      mongoUrl: dburl,
-      collectionName: "sessionWarehouse",
-      useUnifiedTopology: true
-  }),
-  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 },
-  saveUninitialized: true,
-
-}));
-
-
-app.use('/', route);
-
-
-
-
-//SERVER
-let PORT = 3000;
-app.listen(PORT,()=>{
-  console.log("App is running on PORT" + PORT)
+// connect o databse and create database
+mongoose.connect(process.env.DBURL).then((e) => {
+    console.log("Connected to database");
 });
 
+app.use(cookieParser())
+
+  // set up auth
+  app.set('trust proxy', 1) // trust first proxy
+  app.use(expressSession({
+    secret: process.env.SESSION_SECRETE,
+    resave: false,
+    store: MongoStore.create({ mongoUrl: process.env.DBURL, collectionName: 'sessionStore',
+     useUnifiedTopology: true 
+    }),
+    saveUninitialized:true  ,
+    cookie: { 
+      maxAge: 25200000 }
+  }))
+
+// accept jSON data
+app.use(express.json());
+
+// create application/json parser
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// middle ware 
+app.use('/', route);
+
+// settin up the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`server is running on port ${PORT}`);
+})
+
+
 module.exports = app;
-
-
