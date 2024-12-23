@@ -38,9 +38,13 @@ require('dotenv').config();
 
 
 // connect o databse and create database
-mongoose.connect(process.env.DBURL).then((e) => {
-    console.log("Connected to database");
-});
+try {
+    mongoose.connect(process.env.DBURL).then((e) => {
+        console.log("Connected to database");
+    });
+} catch (error) {
+    console.log("Poor connection..." + error);
+}
 
 app.use(cookieParser())
 

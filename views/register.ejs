@@ -13,7 +13,7 @@
   <meta name="description" content="" />
   <meta name="author" content="" />
 
-  <title>Edgecut</title>
+  <title>TheBlogist</title>
 
 
   <!-- bootstrap core css -->
@@ -94,26 +94,29 @@
           <div class="form_container">
             <div class="heading_container">
               <h2>
-                Contact Us
+                LOGIN
               </h2>
             </div>
-            <form action="">
+            <form action="/register-user" method="POST">
               <div>
-                <input type="text" placeholder="Your Name" />
+                <input type="text" placeholder="Your Name" name="name"/>
               </div>
               <div>
-                <input type="text" placeholder="Phone Number" />
+                <input type="email" placeholder="Enter email" name="email" required/>
               </div>
               <div>
                 <input type="email" placeholder="Email" />
               </div>
               <div>
-                <input type="text" class="message-box" placeholder="Message" />
+                <label for="">password</label>
+                <input type="password"  name="password" reqired/>
+              </div>
+              <div>
+                <label for="">confirm-password</label>
+                <input type="password"  name="confirm-password" reqired/>
               </div>
               <div class="btn_box">
-                <button>
-                  SEND
-                </button>
+                <button> LOGIN </button>
               </div>
             </form>
           </div>
